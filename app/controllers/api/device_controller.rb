@@ -7,26 +7,17 @@ class Api::DeviceController < ApplicationController
         # POST request, creates a device
         # Params phone_number, carrier
         # RETURNS device_id
-        
-        #format phone number to es164 standard
-        sanitized_number = DeviceHelper.format_phone(register_params[:phone_number])
-        
-        if sanitized_number
-            carrier = register_params[:carrier]
             
-            new_register = Device.create(phone_number: sanitized_number, carrier: carrier)
+        new_register = Device.create(phone_number: register_params[:phone_number], carrier: register_params[:carrier])
             
-            # Device has validation where Carrier must be filled in
-            if new_register.valid?
-                render json: ({device_id: new_register.id}), status: 200
-            else
-                render json: {"error": new_register.errors.objects.first.full_message}, status: 500
-            end
-
+        # Device has validation where Carrier must be filled in, also Phonelib Validation
+        if new_register.valid?
+            render json: ({device_id: new_register.id}), status: 200
         else
-            # did not format appropriately and could not successfully be transitioned to a US based number
-            render json: {"error": "invalid phone number."}, status: 500
+            render json: {"error": new_register.errors.objects.first.full_message}, status: 500
         end
+
+        
     end
 
     def alive
@@ -70,10 +61,6 @@ class Api::DeviceController < ApplicationController
     
     def register_params
         params.permit(:phone_number, :carrier)
-    end
-
-    def device_params
-        params.permit(:device_id)
     end
 
     def report_params

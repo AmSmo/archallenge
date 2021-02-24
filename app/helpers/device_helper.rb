@@ -6,7 +6,6 @@ module DeviceHelper
         if only_numbers.starts_with?("91") && only_numbers.length == 10
             return "+1#{only_numbers}"
         end
-        
         phone = Phonelib.parse(phone_number)
         if phone.valid?
             return phone.e164
