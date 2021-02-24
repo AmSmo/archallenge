@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
-    post '/register', to: 'phone#register'
-    post '/alive', to: 'phone#alive'
-    post '/report', to: 'phone#report'
-    patch '/terminate', to: 'phone#terminate'
-    get '/all', to: 'phone#index'
+    post '/register', to: 'device#register'
+    post '/alive', to: 'device#alive'
+    post '/report', to: 'device#report'
+    patch '/terminate', to: 'device#terminate'
+    get '/all', to: 'device#index'
   end
 end
