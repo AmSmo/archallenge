@@ -1,4 +1,7 @@
 class Api::DeviceController < ApplicationController
+    # checks that device has not been terminated yet
+
+    skip_before_action :authorized, only: [:register]
 
     def register
         # POST request, creates a device
@@ -12,7 +15,7 @@ class Api::DeviceController < ApplicationController
             carrier = register_params[:carrier]
             
             new_register = Device.create(phone_number: sanitized_number, carrier: carrier)
-            puts sanitized_number
+            
             # Device has validation where Carrier must be filled in
             if new_register.valid?
                 render json: ({device_id: new_register.id}), status: 200
@@ -21,7 +24,7 @@ class Api::DeviceController < ApplicationController
             end
 
         else
-            # did not format appropriately and could not be successfully transitioned to a US based number
+            # did not format appropriately and could not successfully be transitioned to a US based number
             render json: {"error": "invalid phone number."}, status: 500
         end
     end
@@ -30,14 +33,15 @@ class Api::DeviceController < ApplicationController
         # POST request, creates heartbeat linking to device.
         # Params device_id
         # RETURNS {}
-        current_device = Device.find_by(id: device_params[:device_id])
-        puts "HELLO #{current_device},or: #{device_params[:device_id]}"
-        if current_device
 
-            render json:({"Where": current_device}), status: 200
-        else
-            render json: {"error": "No such device found."}, status: 500
+        # in case authorized has a blip and returns something other than a device object
+        begin
+            Heartbeat.create(device: @device)
+            render json:({}), status: 200
+        rescue
+            render json: ({"error": "Device was not found"}), status: 500
         end
+        
     end
 
     def report
@@ -51,7 +55,13 @@ class Api::DeviceController < ApplicationController
         # PATCH request set's disabled_at to current timestamp
         # Params device_id
         # RETURNS {}
-        render json:({"Where": "Terminate"}), status: 200
+
+        begin
+            @device.update(disabled_at: Time.now)
+            render json: {}, status: 200
+        rescue
+            render json:({"errors": "Device was not found"}), status: 500
+        end
     end
 
     private
