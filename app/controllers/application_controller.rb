@@ -3,7 +3,9 @@ class ApplicationController < ActionController::API
     skip_before_action :authorized, only:[:routing_error]
     
     def routing_error
-        render json: {"error": "Route Doesn't Exist Please Check Again."}
+        puts request.method
+        puts "#{params[:path]}"
+        render json: {"error": "#{request.method} request on /#{params[:path]} doesn't exist please check your route."}
     end
 
     def authorized

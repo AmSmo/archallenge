@@ -1,6 +1,5 @@
 class Api::DeviceController < ApplicationController
     # checks that device has not been terminated yet
-
     skip_before_action :authorized, only: [:register]
 
     def register
@@ -39,7 +38,13 @@ class Api::DeviceController < ApplicationController
         # POST request, creates report for device
         # Params device_id, message, sender
         # RETURNS {}
-        render json:({"Where": "Report"}), status: 200
+
+        new_report = Report.create(device: @device, message: report_params[:message], sender: report_params[:sender])
+        if new_report.valid?
+            render json:({}), status: 200
+        else
+            render json: {"error": new_report.errors.objects.first.full_message}, status: 500
+        end
     end
 
     def terminate
