@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Device Create", type: :request do
+describe "Endpoint /api/register - Device Create", type: :request do
 
   it "POST /api/register Good Params - Creates Device" do
     expect {post "/api/register", 
@@ -16,7 +16,7 @@ describe "Device Create", type: :request do
   end
 
   it "POST /api/register Good Params US - Should respond with 200 And Change Number to proper format" do
-    post "/api/register", params: {phone_number: "(917)555-1298", carrier: "Verizon"}
+    post "/api/register", params: {phone_number: "(917)555-1298", carrier: "MCI"}
     expect(Device.last.phone_number).to eq("+19175551298")
     expect(response).to have_http_status(200)
   end
@@ -34,7 +34,7 @@ describe "Device Create", type: :request do
   end
   
   it "POST /api/register - Bad Phone Number (has characters) - Should respond with 500" do
-    post "/api/register", params: {phone_number: "FAKE NUMBER", carrier: "Verizon"}
+    post "/api/register", params: {phone_number: "FAKE NUMBER", carrier: "NYNEX"}
     expect(response).to have_http_status(500)
   end
 

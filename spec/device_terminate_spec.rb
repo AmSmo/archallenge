@@ -9,7 +9,7 @@ describe "Endpoint /api/terminate - Device Disable", type: :request do
     end
 
     it "PATCH /api/terminate - Device Deactivated Already - Response 500" do
-        Device.create(phone_number: "1-800-555-1234", carrier: "Cingular")
+        Device.create(phone_number: "1-800-555-1234", carrier: "New England Telephone and Telegraph Company")
         Device.last.update(disabled_at: DateTime.now)
         patch "/api/terminate", params: {device_id: Device.last.id}
         expect(response).to have_http_status(500)
