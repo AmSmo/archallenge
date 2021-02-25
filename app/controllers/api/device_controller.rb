@@ -7,13 +7,13 @@ class Api::DeviceController < ApplicationController
         # Params phone_number, carrier
         # RETURNS device_id
             
-        new_register = Device.create(phone_number: register_params[:phone_number], carrier: register_params[:carrier])
+        @device = Device.create(phone_number: register_params[:phone_number], carrier: register_params[:carrier])
             
         # Device has validation where Carrier must be filled in, also Phonelib Validation
-        if new_register.valid?
-            render json: ({device_id: new_register.id}), status: 200
+        if @device.valid?
+            render json: ({device_id: @device.id}), status: 200
         else
-            render json: {"error": new_register.errors.objects.first.full_message}, status: 500
+            render json: {"error": @device.errors.objects.first.full_message}, status: 500
         end
 
         
