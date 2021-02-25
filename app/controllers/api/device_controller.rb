@@ -6,16 +6,18 @@ class Api::DeviceController < ApplicationController
         # POST request, creates a device
         # Params phone_number, carrier
         # RETURNS device_id
-            
-        @device = Device.create(phone_number: register_params[:phone_number], carrier: register_params[:carrier])
-            
-        # Device has validation where Carrier must be filled in, also Phonelib Validation
-        if @device.valid?
-            render json: ({device_id: @device.id}), status: 200
-        else
-            render json: {"error": @device.errors.objects.first.full_message}, status: 500
+        begin             
+            @device = Device.create(phone_number: register_params[:phone_number], carrier: register_params[:carrier])
+                
+            # Device has validation where Carrier must be filled in, also Phonelib Validation
+            if @device.valid?
+                render json: ({device_id: @device.id}), status: 200
+            else
+                render json: {"error": @device.errors.objects.first.full_message}, status: 500
+            end
+        rescue
+            render json: {"error": "Phone Number and Carrier both must be provided"}, status: 500
         end
-
         
     end
 
@@ -39,11 +41,15 @@ class Api::DeviceController < ApplicationController
         # Params device_id, message, sender
         # RETURNS {}
 
-        new_report = Report.create(device: @device, message: report_params[:message], sender: report_params[:sender])
-        if new_report.valid?
-            render json:({}), status: 200
-        else
-            render json: {"error": new_report.errors.objects.first.full_message}, status: 500
+        begin
+            new_report = Report.create(device: @device, message: report_params[:message], sender: report_params[:sender])
+            if new_report.valid?
+                render json:({}), status: 200
+            else
+                render json: {"error": new_report.errors.objects.first.full_message}, status: 500
+            end
+        rescue
+            render json: {"error": "device_id, message, and sender are all required arguments"}, status: 500
         end
     end
 
