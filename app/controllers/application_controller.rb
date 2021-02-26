@@ -20,6 +20,8 @@ class ApplicationController < ActionController::API
             else
                 render json: { "error": 'Device not found' }, status: 500
             end
+        else
+            render json: { "error": 'Device not found' }, status: 500
         end
     end
 
